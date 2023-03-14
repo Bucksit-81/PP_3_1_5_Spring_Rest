@@ -2,12 +2,15 @@ package ru.kata.spring.boot_security.demo.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
+import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.service.RoleService;
 import ru.kata.spring.boot_security.demo.service.UserService;
 
 import java.security.Principal;
+import java.util.List;
 
 @Controller
 @RequestMapping("/admin")
@@ -54,19 +57,21 @@ public class AdminController {
 		return "redirect:/admin/users";
 	}
 
-@GetMapping("admin/{id}/update")
-public String edit(Model model, @PathVariable("id") Long id){
-	model.addAttribute("user", userService.findUserById(id));
-	model.addAttribute("roles", roleService.getAllRoles());
-	return "update";
-}
-	@PatchMapping("/admin/{id}")
-	public String update(@ModelAttribute("user") User user,
-						 @PathVariable("id") Long id){
+	@GetMapping("/{id}/update")
+	public String edit(Model model, @PathVariable("id") Long id) {
+		User user = userService.findUserById(id);
+		model.addAttribute("user", user);
+		List<Role> roles = (List<Role>) roleService.getAllRoles();
+		model.addAttribute("allRoles", roles);
+		return "/edit";
+	}
 
-		userService.update(user);
+	@PatchMapping("/{id}")
+	public String update(@ModelAttribute("user") @PathVariable("id") User user, Long id) {
+		userService. update(user, id);
 		return "redirect:/admin/users";
 	}
+
 
 	@DeleteMapping( "admin/delete/{id}")
 	public String deleteUser (@PathVariable("id") Long id) {
