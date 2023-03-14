@@ -57,13 +57,13 @@ public class AdminController {
 		return "redirect:/admin/users";
 	}
 
-	@GetMapping("/{id}/update")
+	@GetMapping("admin/{id}/update")
 	public String edit(Model model, @PathVariable("id") Long id) {
 		User user = userService.findUserById(id);
 		model.addAttribute("user", user);
 		List<Role> roles = (List<Role>) roleService.getAllRoles();
 		model.addAttribute("allRoles", roles);
-		return "/edit";
+		return "/update";
 	}
 
 	@PatchMapping("/{id}")
