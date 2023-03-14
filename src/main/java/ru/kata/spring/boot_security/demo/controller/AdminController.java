@@ -54,19 +54,18 @@ public class AdminController {
 		return "redirect:/admin/users";
 	}
 
-	@GetMapping(value = "admin/{id}/update")
-	public String editUser (@PathVariable("id") Long id, Model model) {
-		model.addAttribute("user", userService.findUserById(id));
-		model.addAttribute("roles", roleService.getAllRoles());
-		return "update";
-	}
+@GetMapping("admin/{id}/update")
+public String edit(Model model, @PathVariable("id") Long id){
+	model.addAttribute("user", userService.findUserById(id));
+	model.addAttribute("roles", roleService.getAllRoles());
+	return "update";
+}
+	@PatchMapping("/admin/{id}")
+	public String update(@ModelAttribute("user") User user,
+						 @PathVariable("id") Long id){
 
-	@PostMapping(value = "/{id}")
-	public String update (@ModelAttribute("user") User user,
-						  @PathVariable("id") Long id) {
-		userService.update(id, user);
+		userService.update(user);
 		return "redirect:/admin/users";
-
 	}
 
 	@DeleteMapping( "admin/delete/{id}")
