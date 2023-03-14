@@ -64,7 +64,7 @@ public class AdminController {
 		return "update";
 	}
 
-	@PostMapping(	value = "/{id}")
+	@PostMapping(value = "/{id}")
 	public String update (@ModelAttribute("user") User user,
 						  @PathVariable("id") Long id) {
 		userService.update(id, user);
