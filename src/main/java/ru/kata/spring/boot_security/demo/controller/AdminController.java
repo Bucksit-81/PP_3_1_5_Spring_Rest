@@ -2,7 +2,6 @@ package ru.kata.spring.boot_security.demo.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
@@ -57,17 +56,17 @@ public class AdminController {
 		return "redirect:/admin/users";
 	}
 
-	@GetMapping("admin/{id}/update")
+	@GetMapping("/{id}/update")
 	public String edit(Model model, @PathVariable("id") Long id) {
 		User user = userService.findUserById(id);
 		model.addAttribute("user", user);
 		List<Role> roles = (List<Role>) roleService.getAllRoles();
-		model.addAttribute("allRoles", roles);
+		model.addAttribute("roles", roles);
 		return "/update";
 	}
 
 	@PatchMapping("/{id}")
-	public String update(@ModelAttribute("user") @PathVariable("id") User user, Long id) {
+	public String update(@ModelAttribute("user") User user, @PathVariable("id") Long id) {
 		userService. update(user, id);
 		return "redirect:/admin/users";
 	}
