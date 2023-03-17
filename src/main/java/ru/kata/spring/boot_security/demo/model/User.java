@@ -3,8 +3,6 @@ package ru.kata.spring.boot_security.demo.model;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -17,16 +15,23 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "username", nullable = false, unique = true)
+    @Column(name = "email", nullable = false, unique = true)
     @NotBlank(message = "Поле username не может быть пустым")
-    @Size(min = 3, max = 50, message = "Поле должно содержать от 3 до 50 символов")
+    @Size(min = 5, max = 50, message = "Поле должно содержать от 5 до 50 символов")
     private String username;
+    @Column(name = "first_name", nullable = false)
+    @NotBlank(message = "Поле First Name не может быть пустым")
+    @Size(min = 1, max = 50, message = "Поле должно содержать от 1 до 50 символов")
+    private String firstName;
+    @Column(name = "last_name", nullable = false)
+    @NotBlank(message = "Поле Last name не может быть пустым")
+    @Size(min = 1, max = 50, message = "Поле должно содержать от 1 до 50 символов")
+    private String lastName;
+    @Column(name = "age")
+   private int age;
     @Column(name = "password", nullable = false)
     @NotBlank(message = "Поле password не может быть пустым")
     private String password;
-    @Column(name = "email", nullable = false, unique = true)
-    @NotBlank(message = "Поле email не может быть пустым")
-    private String email;
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
     @JoinTable(name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -35,17 +40,56 @@ public class User implements UserDetails {
 
     public User() {   }
 
-    public User(String username, String password, String email) {
+    public User(String username, String password) {
         this.username = username;
         this.password = password;
-        this.email = email;
     }
 
-    public User(String username, String password, String email, Set<Role> roleList) {
+    public User(String username, String firstName, String lastName, int age,
+                String password, Set<Role> roleList) {
         this.username = username;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.age = age;
         this.password = password;
-        this.email = email;
         this.roleList = roleList;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", age=" + age +
+                ", password='" + password + '\'' +
+                ", roleList=" + roleList +
+                '}';
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
     }
 
     public Long getId() {
@@ -62,14 +106,6 @@ public class User implements UserDetails {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 
     public Set<Role> getRoleList() {
@@ -114,16 +150,6 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
-    }
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                ", email='" + email + '\'' +
-                '}';
     }
 
     public String roleToString(){

@@ -9,7 +9,6 @@ import ru.kata.spring.boot_security.demo.service.RoleService;
 import ru.kata.spring.boot_security.demo.service.UserService;
 
 import java.security.Principal;
-import java.util.List;
 
 @Controller
 @RequestMapping("/admin")
@@ -26,55 +25,34 @@ public class AdminController {
     public String show(Principal principal, Model model) {
         User admin = userService.findByUsername(principal.getName());
         model.addAttribute("admin", admin);
+
+		model.addAttribute("users", userService.allUsers());
+		model.addAttribute("userRoles", roleService.getAllRoles());
+
+		model.addAttribute("userNew", new User());
+		model.addAttribute("rolesNew", roleService.getAllRoles());
+
 		return "admin";
     }
 
-	@GetMapping("/users")
-	public String allUsers(Model model){
-		model.addAttribute("users", userService.allUsers());
-		model.addAttribute("userRoles", roleService.getAllRoles());
-		return "/users";
-	}
-
-
-	@GetMapping(value = "/user/{id}")
-	public String showUser(@PathVariable("id") Long id, Model model){
-		model.addAttribute("user", userService.findUserById(id));
-		return "/user";
-	}
-
-	@GetMapping(value = "/add")
-	public String newUser(Model model) {
-		model.addAttribute("user", new User());
-		model.addAttribute("roles", roleService.getAllRoles());
-		return "add";
-	}
-
-	@PostMapping()
+	//Добавление юзера
+	@PostMapping("")
 	public String addUser(@ModelAttribute("user") User user) {
 		userService.saveUser(user);
-		return "redirect:/admin/users";
+		return "redirect:/admin";
 	}
 
-	@GetMapping("/{id}/update")
-	public String edit(Model model, @PathVariable("id") Long id) {
-		User user = userService.findUserById(id);
-		model.addAttribute("user", user);
-		List<Role> roles = (List<Role>) roleService.getAllRoles();
-		model.addAttribute("roles", roles);
-		return "/update";
-	}
-
+	//Редактирование юзера
 	@PatchMapping("/{id}")
-	public String update(@ModelAttribute("user") User user, @PathVariable("id") Long id) {
-		userService. update(user, id);
-		return "redirect:/admin/users";
+	public String update(@ModelAttribute("user") User user, @PathVariable("id") long id) {
+		userService.update(user, id);
+		return "redirect:/admin";
 	}
 
-
-	@DeleteMapping( "admin/delete/{id}")
+	// удаление юзера
+	@GetMapping( "/{id}/delete")
 	public String deleteUser (@PathVariable("id") Long id) {
 		userService.deleteUser(id);
-		return "redirect:/admin/users";
+		return "redirect:/admin";
 	}
 }
