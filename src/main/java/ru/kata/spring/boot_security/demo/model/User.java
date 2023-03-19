@@ -1,6 +1,7 @@
 package ru.kata.spring.boot_security.demo.model;
 
 
+import org.hibernate.annotations.Cascade;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -32,11 +33,14 @@ public class User implements UserDetails {
     @Column(name = "password", nullable = false)
     @NotBlank(message = "Поле password не может быть пустым")
     private String password;
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
     @JoinTable(name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private Set<Role> roleList = new HashSet<>();
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    private Set<Role> roleList;
+
+
 
     public User() {   }
 
@@ -54,6 +58,19 @@ public class User implements UserDetails {
         this.password = password;
         this.roleList = roleList;
     }
+
+       public User(Long id, String firstName, String lastName, int age, String username,
+                String password, Set<Role> roleList) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.age = age;
+        this.username = username;
+        this.password = password;
+        this.roleList = roleList;
+
+    }
+
 
     @Override
     public String toString() {

@@ -49,6 +49,7 @@ public class UserServiceImpl implements UserService {
     public User findByUsername (String username) {
         return userRepository.findByUsername(username).get();
     }
+
     @Override
     @Transactional
     public void saveUser(User user){
@@ -62,16 +63,16 @@ public class UserServiceImpl implements UserService {
         userRepository.deleteById(id);
     }
 
-    @Transactional
     @Override
-    public void update(User user, Long id) {
-        User userFromDb = userRepository.findById(id).get();
-        if (userFromDb.getPassword().equals(user.getPassword())) {
-            userRepository.save(user);
+    @Transactional
+    public void update(User user) {
+        String pass = user.getPassword();
+        if (pass.isEmpty()) {
+            user.setPassword(userRepository.findById(user.getId()).get().getPassword());
         } else {
-            user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-            userRepository.save(user);
+            user.setPassword(bCryptPasswordEncoder.encode(pass));
         }
+        userRepository.save(user);
     }
 
     @Override

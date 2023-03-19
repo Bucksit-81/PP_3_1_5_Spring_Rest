@@ -8,4 +8,7 @@ import java.util.List;
 @Component
 public interface RoleService {
     List<Role>  getAllRoles();
+
+    Role findByName(String name);
+
 }

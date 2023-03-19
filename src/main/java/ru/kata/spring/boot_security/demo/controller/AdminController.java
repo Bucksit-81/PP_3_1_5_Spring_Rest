@@ -3,12 +3,12 @@ package ru.kata.spring.boot_security.demo.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.service.RoleService;
 import ru.kata.spring.boot_security.demo.service.UserService;
 
 import java.security.Principal;
+
 
 @Controller
 @RequestMapping("/admin")
@@ -43,9 +43,15 @@ public class AdminController {
 	}
 
 	//Редактирование юзера
-	@PatchMapping("/{id}")
-	public String update(@ModelAttribute("user") User user, @PathVariable("id") long id) {
-		userService.update(user, id);
+	@PatchMapping(value = "/{id}")
+	public String updateUser(@ModelAttribute("user") User updatedUser, @PathVariable("id") Long id) {
+		User existingUser = userService.findUserById(id);
+		existingUser.setUsername(updatedUser.getUsername());
+		existingUser.setUsername(updatedUser.getUsername());
+		existingUser.setLastName(updatedUser.getLastName());
+		existingUser.setAge(updatedUser.getAge());
+		existingUser.setRoleList(updatedUser.getRoleList());
+		userService.update(existingUser);
 		return "redirect:/admin";
 	}
 
