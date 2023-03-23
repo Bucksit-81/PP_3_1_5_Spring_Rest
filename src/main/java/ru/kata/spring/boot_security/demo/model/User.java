@@ -6,6 +6,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.*;
@@ -29,11 +30,12 @@ public class User implements UserDetails {
     @Size(min = 1, max = 50, message = "Поле должно содержать от 1 до 50 символов")
     private String lastName;
     @Column(name = "age")
+    //@Min(value = 18, message = "Возраст должен быть больше 18")
    private int age;
     @Column(name = "password", nullable = false)
     @NotBlank(message = "Поле password не может быть пустым")
     private String password;
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
     @JoinTable(name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
