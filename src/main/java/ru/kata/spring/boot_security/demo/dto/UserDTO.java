@@ -3,8 +3,6 @@ package ru.kata.spring.boot_security.demo.dto;
 import org.hibernate.annotations.Cascade;
 import ru.kata.spring.boot_security.demo.model.Role;
 
-import javax.persistence.*;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.Set;
@@ -23,7 +21,7 @@ public class UserDTO {
     private int age;
     @NotBlank(message = "Поле password не может быть пустым")
     private String password;
-    private Set<Role> roleList;
+    private Set<Role> roles;
 
     public String getUsername() {
         return username;
@@ -65,19 +63,11 @@ public class UserDTO {
         this.password = password;
     }
 
-    public Set<Role> getRoleList() {
-        return roleList;
+    public Set<Role> getRoles() {
+        return roles;
     }
 
-    public void setRoleList(Set<Role> roleList) {
-        this.roleList = roleList;
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
     }
-    //    public UserDTO(String username, String firstName, String lastName, int age, String password, Set<Role> roleList) {
-//        this.username = username;
-//        this.firstName = firstName;
-//        this.lastName = lastName;
-//        this.age = age;
-//        this.password = password;
-//        this.roleList = roleList;
-//    }
 }

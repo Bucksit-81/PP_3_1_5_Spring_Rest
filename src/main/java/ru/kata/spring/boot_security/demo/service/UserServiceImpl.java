@@ -28,8 +28,35 @@ public class UserServiceImpl implements UserService {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
+    @Transactional
     @Override
-    public User findUserById(Long id){
+    public void saveUser(User user) {
+        if (userRepository.findByUsername(user.getUsername()).isPresent()) {
+            return;
+        }
+        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+        userRepository.save(user);
+    }
+
+    @Transactional
+    @Override
+    public void updateUser(User user, Long id) {
+        User userFromDb = userRepository.findById(id).get();
+        if (userFromDb.getPassword().equals(user.getPassword())) {
+            userRepository.save(user);
+        } else {
+            user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+            userRepository.save(user);
+        }
+    }
+
+    @Override
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
+    }
+
+    @Override
+    public User getUserById(Long id) {
         User user = null;
         Optional<User> userFromBD = userRepository.findById(id);
         if (userFromBD.isPresent()) {
@@ -38,59 +65,39 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
-
+    @Transactional
     @Override
-   // @Transactional(readOnly = true)
-    public List<User> allUsers() {
-        return userRepository.findAll();
+    public boolean deleteUserById(Long id) {
+        if (userRepository.findById(id).isPresent()) {
+            userRepository.deleteById(id);
+            return true;
+        }
+        return false;
     }
+
+    @Transactional
     @Override
-   // @Transactional
-    public User findByUsername (String username) {
+    public User getUserByUsername(String username) {
         return userRepository.findByUsername(username).get();
     }
 
-    @Override
     @Transactional
-    public void saveUser(User user){
-        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-        userRepository.save(user);
-    }
-
     @Override
-    @Transactional
-    public void deleteUser(Long id){
-        userRepository.deleteById(id);
-    }
-
-    @Override
-    @Transactional
-    public void update(User user) {
-        String pass = user.getPassword();
-        if (pass.isEmpty()) {
-            user.setPassword(userRepository.findById(user.getId()).get().getPassword());
-        } else {
-            user.setPassword(bCryptPasswordEncoder.encode(pass));
-        }
-        userRepository.save(user);
-    }
-
-    @Override
-    @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<User> optionalUser = userRepository.findByUsername(username);
+
         if (optionalUser.isEmpty()) {
-            throw new UsernameNotFoundException("User not found");
+            throw new UsernameNotFoundException(String.format("User '%s' not found", username));
         }
         User user = optionalUser.get();
-        return new org.springframework.security.core.userdetails.User(user.getUsername(),user.getPassword(),
-                mapRolesToAuthorities(user.getRoleList()));
-        }
 
-    private Collection<? extends GrantedAuthority> mapRolesToAuthorities (Collection<Role> roleList) {
-        return roleList.stream().map(r -> new SimpleGrantedAuthority(r.getName())).
-                collect(Collectors.toList());
+        return new org.springframework.security.core.userdetails.User(user.getUsername(),
+                user.getPassword(), mapRoleToAuthorities(user.getRoles()));
     }
 
+    // метод преобразует коллекцию Role в Authority
+    private Collection<? extends GrantedAuthority> mapRoleToAuthorities(Collection<Role> roles) {
+        return roles.stream().map(r -> new SimpleGrantedAuthority(r.getRole())).collect(Collectors.toList());
+    }
 
 }

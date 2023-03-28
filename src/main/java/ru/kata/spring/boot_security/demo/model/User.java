@@ -1,12 +1,10 @@
 package ru.kata.spring.boot_security.demo.model;
 
 
-import org.hibernate.annotations.Cascade;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.*;
@@ -30,8 +28,7 @@ public class User implements UserDetails {
     @Size(min = 1, max = 50, message = "Поле должно содержать от 1 до 50 символов")
     private String lastName;
     @Column(name = "age")
-    //@Min(value = 18, message = "Возраст должен быть больше 18")
-   private int age;
+    private int age;
     @Column(name = "password", nullable = false)
     @NotBlank(message = "Поле password не может быть пустым")
     private String password;
@@ -39,9 +36,7 @@ public class User implements UserDetails {
     @JoinTable(name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    private Set<Role> roleList;
-
+    private Set<Role> roles = new HashSet<>();
 
 
     public User() {   }
@@ -52,27 +47,26 @@ public class User implements UserDetails {
     }
 
     public User(String username, String firstName, String lastName, int age,
-                String password, Set<Role> roleList) {
+                String password, Set<Role> roles) {
         this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;
         this.age = age;
         this.password = password;
-        this.roleList = roleList;
+        this.roles = roles;
     }
 
        public User(Long id, String firstName, String lastName, int age, String username,
-                String password, Set<Role> roleList) {
+                String password, Set<Role> roles) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.age = age;
         this.username = username;
         this.password = password;
-        this.roleList = roleList;
+        this.roles = roles;
 
     }
-
 
     @Override
     public String toString() {
@@ -83,7 +77,7 @@ public class User implements UserDetails {
                 ", lastName='" + lastName + '\'' +
                 ", age=" + age +
                 ", password='" + password + '\'' +
-                ", roleList=" + roleList +
+
                 '}';
     }
 
@@ -127,18 +121,18 @@ public class User implements UserDetails {
         this.password = password;
     }
 
-    public Set<Role> getRoleList() {
-        return roleList;
+    public Set<Role> getRoles() {
+        return roles;
     }
 
-    public void setRoleList(Set<Role> roleList) {
-        this.roleList = roleList;
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
 
-        return getRoleList();
+        return getRoles();
     }
 
     @Override
@@ -173,7 +167,7 @@ public class User implements UserDetails {
 
     public String roleToString(){
         StringBuilder sb = new StringBuilder();
-        for(Role role: roleList){
+        for(Role role: roles){
             sb.append(role.getNameRole()).append(" ");
         }
         return sb.toString();

@@ -1,24 +1,26 @@
-const user_page = document.getElementById("data-userpage");
-const user_header = document.getElementById("user-header")
-const url = 'http://localhost:8080/api/viewUser';
-let res = '';
+const data = document.getElementById("tableUserBody");
+const url = 'http://localhost:8080/api/user/viewUser';
+const panel = document.getElementById("user-header");
 
-function showUser() {
+function userAuthInfo() {
     fetch(url)
-        .then( (response) => response.json())
-        .then( (user) => {
-            res +=
-                `<tr>
-                <td>${user.id}</td>
-                <td>${user.firstName}</td>
-                <td>${user.lastName}</td>
-                <td>${user.age}</td>
-                <td>${user.username}</td>
-                <td>${user.roleList.map(role => " " + role.name.substring(5))}</td>
-            </tr>`;
-           user_page.innerHTML = res;
-           user_header.innerHTML = `<h5>${user.username} with roles: ${user.roleList.map(role => " " + role.name.substring(5))}</h5>`
+        .then((res) => res.json())
+        .then((user) => {
 
+            let temp = '';
+
+            temp += `<tr>
+            <td>${user.id}</td>
+            <td>${user.firstName}</td>
+            <td>${user.lastName}</td>
+            <td>${user.age}</td>
+            <td>${user.username}</td>
+            <td>${user.roles.map(role => " " + role.role.substring(5))}</td>
+            </tr>`;
+            data.innerHTML = temp;
+            panel.innerHTML = `<h5>${user.username} with roles: ${user.roles.map(role => " " + role.role.substring(5))}</h5>`
         });
 }
-showUser();
+
+userAuthInfo()
+

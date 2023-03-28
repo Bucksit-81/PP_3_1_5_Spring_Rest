@@ -1,10 +1,8 @@
 package ru.kata.spring.boot_security.demo.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
-import java.util.List;
 import java.util.Objects;
 
 
@@ -18,22 +16,18 @@ public class Role implements GrantedAuthority {
     private Long id;
 
     @Column (name = "name")
-    private String name;
+    private String role;
 
-    @JsonIgnore
-    @ManyToMany(mappedBy = "roleList", cascade = CascadeType.ALL)
-    private List<User> users;
-
-    public Role() {
+        public Role() {
     }
 
-    public Role(Long id, String name) {
+    public Role(Long id, String role) {
         this.id = id;
-        this.name = name;
+        this.role = role;
     }
 
-    public Role(String name) {
-        this.name = name;
+    public Role(String role) {
+        this.role = role;
     }
 
     public Long getId() {
@@ -44,51 +38,48 @@ public class Role implements GrantedAuthority {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getRole() {
+        return role;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public List<User> getUsers() {
-        return users;
-    }
-
-    public void setUsers(List<User> users) {
-        this.users = users;
+    public void setRole(String role) {
+        this.role = role;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Role role = (Role) o;
-        return id.equals(role.id) && name.equals(role.name) && users.equals(role.users);
+        Role role1 = (Role) o;
+        return id.equals(role1.id) && role.equals(role1.role);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, users);
+        return Objects.hash(id, role);
     }
 
     @Override
     public String toString() {
-        return "Role{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", users=" + users +
-                '}';
+        String role = getRole();
+        if (role.equals("ROLE_ADMIN")) {
+            return "ADMIN";
+        } else {
+            if (role.equals("ROLE_USER")) {
+                return "USER";
+            } else {
+                return "ADMIN USER";
+            }
+        }
     }
 
     @Override
     public String getAuthority() {
-        return getName();
+        return getRole();
     }
 
     public String getNameRole(){
-        return name.substring("ROLE_".length());
+        return role.substring("ROLE_".length());
     }
 
 
