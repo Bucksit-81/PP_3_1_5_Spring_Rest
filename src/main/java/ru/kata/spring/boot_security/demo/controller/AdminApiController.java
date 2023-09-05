@@ -13,7 +13,6 @@ import ru.kata.spring.boot_security.demo.util.UserNotFoundException;
 import java.security.Principal;
 import java.util.List;
 
-
 @RestController
 @RequestMapping("/api/admin")
 public class AdminApiController {
